@@ -1,4 +1,11 @@
-// Aprovaia - Script Principal
+// TODO:
+// ! clicar no header, de fora de alguma aba, resulta nas abas desaparecendo.
+// ! o subtítulo da logo, em todas as telas, tá descentralizado.
+// ! gradiente final (entre o fim da landing e o footer) tá horrível e deve ser removido.
+// ! clicar na logo tá gerando brevemente um retângulo em sua volta (pra sinalizar um clique). não sei se acontece em produção. deve ser removido.
+// ! todas as fontes demorando pra carregar ao trocar de página (noticiável o fallback). remover, talvez adicionando um carregamento breve.
+
+// Aprova.ia - Script Principal
 document.addEventListener('DOMContentLoaded', function() {
     initializeChatbot();
     initializeNavigation();
@@ -225,7 +232,8 @@ function initializeMobileMenu() {
     const nav = document.querySelector('.nav');
     
     if (mobileToggle && nav) {
-        mobileToggle.addEventListener('click', function() {
+        mobileToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
             nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
             nav.classList.toggle('mobile-active');
         });
@@ -236,6 +244,11 @@ function initializeMobileMenu() {
                 nav.style.display = 'none';
                 nav.classList.remove('mobile-active');
             }
+        });
+        
+        // Prevent nav clicks from closing menu immediately
+        nav.addEventListener('click', function(e) {
+            e.stopPropagation();
         });
     }
 }

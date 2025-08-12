@@ -1,5 +1,14 @@
 /* Questões & Gabaritos - Estilos específicos */
 
+/* Typography Override for Rethink Sans */
+.questoes-hero .hero-title,
+.filters-title,
+.section-title,
+.tip-card h3,
+.modal-header h3 {
+    font-family: 'Rethink Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 /* Hero Section Questões */
 .questoes-hero {
     background: linear-gradient(135deg, var(--seashell) 0%, var(--seashell-light) 100%);
@@ -11,13 +20,13 @@
 .questoes-hero .hero-icon {
     width: 80px;
     height: 80px;
-    background: var(--lime);
+    background: var(--lime-dark);
     border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: var(--oxford-blue);
+    color: white;
     margin: 0 auto 1.5rem;
     box-shadow: var(--shadow-medium);
 }
@@ -609,14 +618,15 @@
 .tip-icon {
     width: 60px;
     height: 60px;
-    background: var(--lime);
+    background: var(--lime-dark);
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    color: var(--oxford-blue);
+    color: white;
     margin: 0 auto 1rem;
+    box-shadow: var(--shadow-light);
 }
 
 .tip-card h3 {

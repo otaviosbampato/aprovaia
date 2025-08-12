@@ -1,8 +1,9 @@
-/* CSS Variables - Paleta de Cores Aprovaia */
+/* CSS Variables - Paleta de Cores Aprova.ia */
 :root {
     --seashell: #f7ebe8;
     --oxford-blue: #051332;
     --lime: #c6f91f;
+    --lime-dark: #9bc916; /* Versão mais escura para melhor contraste */
     --ebony: #4a5043;
     --hookers-green: #70877f;
     
@@ -36,6 +37,16 @@ body {
     color: var(--oxford-blue);
     line-height: 1.6;
     overflow-x: hidden;
+}
+
+/* Typography - Rethink Sans for important titles */
+.logo h1,
+.hero-title,
+.section-title,
+.redacoach-hero .hero-title,
+.questoes-hero .hero-title,
+.feature-title {
+    font-family: 'Rethink Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Header */
@@ -133,6 +144,18 @@ body {
     background: linear-gradient(135deg, var(--seashell) 0%, var(--seashell-light) 100%);
     padding: 4rem 2rem;
     text-align: center;
+    position: relative;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent 0%, var(--seashell-light) 100%);
+    pointer-events: none;
 }
 
 .hero-content {
@@ -216,7 +239,19 @@ body {
 /* Chatbot Section */
 .chatbot-section {
     padding: 4rem 0;
-    background: var(--seashell);
+    background: linear-gradient(to bottom, var(--seashell-light) 0%, var(--seashell) 100%);
+    position: relative;
+}
+
+.chatbot-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent 0%, var(--seashell-light) 100%);
+    pointer-events: none;
 }
 
 .chatbot-container {
@@ -266,8 +301,8 @@ body {
 }
 
 .bot-message .message-avatar {
-    background: var(--lime);
-    color: var(--oxford-blue);
+    background: var(--lime-dark);
+    color: white;
 }
 
 .user-message .message-avatar {
@@ -395,7 +430,19 @@ body {
 /* Features Section */
 .features-section {
     padding: 4rem 0;
-    background: var(--seashell-light);
+    background: linear-gradient(to bottom, var(--seashell-light) 0%, var(--seashell) 100%);
+    position: relative;
+}
+
+.features-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent 0%, var(--seashell-light) 100%);
+    pointer-events: none;
 }
 
 .features-grid {
@@ -436,14 +483,15 @@ body {
 .feature-icon {
     width: 60px;
     height: 60px;
-    background: var(--lime);
+    background: var(--lime-dark);
     border-radius: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.8rem;
-    color: var(--oxford-blue);
+    color: white;
     margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-light);
 }
 
 .feature-title {
@@ -476,7 +524,19 @@ body {
 /* About Section */
 .about-section {
     padding: 4rem 0;
-    background: var(--seashell);
+    background: linear-gradient(to bottom, var(--seashell-light) 0%, var(--seashell) 100%);
+    position: relative;
+}
+
+.about-section::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent 0%, var(--oxford-blue) 100%);
+    pointer-events: none;
 }
 
 .about-content {
@@ -518,8 +578,8 @@ body {
 }
 
 .about-placeholder {
-    background: linear-gradient(135deg, var(--lime) 0%, var(--hookers-green) 100%);
-    color: var(--oxford-blue);
+    background: linear-gradient(135deg, var(--lime-dark) 0%, var(--hookers-green) 100%);
+    color: white;
     padding: 4rem 2rem;
     border-radius: 20px;
     box-shadow: var(--shadow-medium);
