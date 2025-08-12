@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedaCoach - Correção Inteligente de Redações | Aprovaia</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="redacoach.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1><a href="index.html" style="color: inherit; text-decoration: none;">Aprovaia</a></h1>
+                <span class="tagline">RedaCoach - Correção Inteligente</span>
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="index.html" class="nav-link">Início</a></li>
+                    <li><a href="redacoach.html" class="nav-link active">RedaCoach</a></li>
+                    <li><a href="questoes.html" class="nav-link">Questões & Gabaritos</a></li>
+                    <li><a href="index.html#sobre" class="nav-link">Sobre</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="redacoach-hero">
+            <div class="section-container">
+                <div class="hero-content">
+                    <div class="hero-icon">
+                        <i class="fas fa-edit"></i>
+                    </div>
+                    <h1 class="hero-title">RedaCoach</h1>
+                    <p class="hero-subtitle">Correção automática de redações com feedback detalhado e notas por competência do ENEM</p>
+                    <div class="hero-features">
+                        <div class="hero-feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Avaliação por Competências</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Feedback Inteligente</span>
+                        </div>
+                        <div class="hero-feature">
+                            <i class="fas fa-target"></i>
+                            <span>Sugestões de Melhoria</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-section">
+            <div class="section-container">
+                <div class="upload-container">
+                    <h2 class="section-title">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        Envie sua Redação
+                    </h2>
+                    
+                    <div class="upload-methods">
+                        <!-- Texto direto -->
+                        <div class="upload-method active" data-method="text">
+                            <div class="method-header">
+                                <i class="fas fa-keyboard"></i>
+                                <h3>Escrever Texto</h3>
+                                <p>Digite ou cole sua redação diretamente</p>
+                            </div>
+                            
+                            <div class="text-input-container">
+                                <div class="essay-info">
+                                    <div class="essay-theme">
+                                        <label for="essayTheme">Tema da Redação:</label>
+                                        <input 
+                                            type="text" 
+                                            id="essayTheme" 
+                                            placeholder="Ex: A importância da educação no Brasil"
+                                            class="theme-input"
+                                        >
+                                    </div>
+                                    <div class="word-count">
+                                        <span id="wordCount">0</span> palavras
+                                    </div>
+                                </div>
+                                
+                                <textarea 
+                                    id="essayText" 
+                                    placeholder="Digite sua redação aqui... (mínimo 200 palavras)"
+                                    class="essay-textarea"
+                                    rows="15"
+                                ></textarea>
+                                
+                                <div class="input-actions">
+                                    <button type="button" class="btn-secondary" id="clearText">
+                                        <i class="fas fa-eraser"></i>
+                                        Limpar
+                                    </button>
+                                    <button type="button" class="btn-primary" id="analyzeText">
+                                        <i class="fas fa-search"></i>
+                                        Analisar Redação
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload de arquivo -->
+                        <div class="upload-method" data-method="file">
+                            <div class="method-header">
+                                <i class="fas fa-file-upload"></i>
+                                <h3>Enviar Arquivo</h3>
+                                <p>Faça upload de um arquivo PDF, DOC ou imagem</p>
+                            </div>
+                            
+                            <div class="file-upload-container">
+                                <div class="file-drop-zone" id="fileDropZone">
+                                    <div class="drop-zone-content">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <h4>Arraste e solte seu arquivo aqui</h4>
+                                        <p>ou clique para selecionar</p>
+                                        <div class="supported-formats">
+                                            <span>Formatos suportados: PDF, DOC, DOCX, JPG, PNG</span>
+                                        </div>
+                                    </div>
+                                    <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" hidden>
+                                </div>
+                                
+                                <div class="file-info" id="fileInfo" style="display: none;">
+                                    <div class="file-details">
+                                        <i class="fas fa-file"></i>
+                                        <div>
+                                            <span class="file-name"></span>
+                                            <span class="file-size"></span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="remove-file" id="removeFile">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="file-actions" style="display: none;">
+                                    <button type="button" class="btn-secondary" id="changeFile">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        Trocar Arquivo
+                                    </button>
+                                    <button type="button" class="btn-primary" id="analyzeFile">
+                                        <i class="fas fa-search"></i>
+                                        Analisar Arquivo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Method toggle -->
+                    <div class="method-toggle">
+                        <button class="toggle-btn active" data-method="text">
+                            <i class="fas fa-keyboard"></i>
+                            Texto
+                        </button>
+                        <button class="toggle-btn" data-method="file">
+                            <i class="fas fa-file"></i>
+                            Arquivo
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="section-container">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Resultado da Análise
+                </h2>
+                
+                <div class="results-container">
+                    <!-- Nota geral -->
+                    <div class="overall-score">
+                        <div class="score-circle">
+                            <div class="score-value" id="overallScore">0</div>
+                            <div class="score-max">/1000</div>
+                        </div>
+                        <div class="score-description">
+                            <h3>Nota Geral</h3>
+                            <p id="scoreDescription">Sua redação está sendo analisada...</p>
+                        </div>
+                    </div>
+
+                    <!-- Competências -->
+                    <div class="competencies-grid">
+                        <div class="competency-card">
+                            <div class="competency-header">
+                                <h4>Competência 1</h4>
+                                <div class="competency-score" id="comp1Score">0</div>
+                            </div>
+                            <div class="competency-title">Domínio da escrita formal</div>
+                            <div class="competency-description" id="comp1Description">
+                                Analisando gramática, ortografia e adequação ao registro formal...
+                            </div>
+                            <div class="competency-suggestions" id="comp1Suggestions"></div>
+                        </div>
+
+                        <div class="competency-card">
+                            <div class="competency-header">
+                                <h4>Competência 2</h4>
+                                <div class="competency-score" id="comp2Score">0</div>
+                            </div>
+                            <div class="competency-title">Compreensão do tema</div>
+                            <div class="competency-description" id="comp2Description">
+                                Verificando entendimento e desenvolvimento do tema proposto...
+                            </div>
+                            <div class="competency-suggestions" id="comp2Suggestions"></div>
+                        </div>
+
+                        <div class="competency-card">
+                            <div class="competency-header">
+                                <h4>Competência 3</h4>
+                                <div class="competency-score" id="comp3Score">0</div>
+                            </div>
+                            <div class="competency-title">Argumentação e dados</div>
+                            <div class="competency-description" id="comp3Description">
+                                Avaliando qualidade dos argumentos e uso de informações...
+                            </div>
+                            <div class="competency-suggestions" id="comp3Suggestions"></div>
+                        </div>
+
+                        <div class="competency-card">
+                            <div class="competency-header">
+                                <h4>Competência 4</h4>
+                                <div class="competency-score" id="comp4Score">0</div>
+                            </div>
+                            <div class="competency-title">Coesão e coerência</div>
+                            <div class="competency-description" id="comp4Description">
+                                Analisando conectivos e organização das ideias...
+                            </div>
+                            <div class="competency-suggestions" id="comp4Suggestions"></div>
+                        </div>
+
+                        <div class="competency-card">
+                            <div class="competency-header">
+                                <h4>Competência 5</h4>
+                                <div class="competency-score" id="comp5Score">0</div>
+                            </div>
+                            <div class="competency-title">Proposta de intervenção</div>
+                            <div class="competency-description" id="comp5Description">
+                                Verificando qualidade e detalhamento da proposta...
+                            </div>
+                            <div class="competency-suggestions" id="comp5Suggestions"></div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback detalhado -->
+                    <div class="detailed-feedback">
+                        <h3>
+                            <i class="fas fa-comments"></i>
+                            Feedback Detalhado
+                        </h3>
+                        <div class="feedback-content" id="detailedFeedback">
+                            <div class="feedback-loading">
+                                <i class="fas fa-spinner fa-spin"></i>
+                                Analisando sua redação...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ações -->
+                    <div class="results-actions">
+                        <button class="btn-secondary" id="downloadReport">
+                            <i class="fas fa-download"></i>
+                            Baixar Relatório
+                        </button>
+                        <button class="btn-primary" id="newAnalysis">
+                            <i class="fas fa-plus"></i>
+                            Nova Análise
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tips Section -->
+        <section class="tips-section">
+            <div class="section-container">
+                <h2 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Dicas para uma Redação Nota 1000
+                </h2>
+                
+                <div class="tips-grid">
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-pencil-alt"></i>
+                        </div>
+                        <h3>Estrutura</h3>
+                        <p>Organize sua redação em: introdução com tese, dois parágrafos de desenvolvimento e conclusão com proposta de intervenção.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <h3>Repertório</h3>
+                        <p>Use referências de filósofos, dados estatísticos, fatos históricos ou exemplos da atualidade para enriquecer seus argumentos.</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h3>Conectivos</h3>
+                        <p>Utilize conectivos variados para dar fluidez ao texto: "além disso", "por outro lado", "dessa forma", "portanto".</p>
+                    </div>
+                    
+                    <div class="tip-card">
+                        <div class="tip-icon">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h3>Proposta</h3>
+                        <p>Sua proposta de intervenção deve ter: ação, agente, modo/meio, finalidade e detalhamento.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>Aprovaia</h4>
+                    <p>Preparação inteligente para ENEM e vestibulares</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Links Úteis</h4>
+                    <ul>
+                        <li><a href="index.html">Início</a></li>
+                        <li><a href="redacoach.html">RedaCoach</a></li>
+                        <li><a href="questoes.html">Questões</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contato</h4>
+                    <p>contato@aprovaia.com</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Aprovaia. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="redacoach.js"></script>
+</body>
+</html>
