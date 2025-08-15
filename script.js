@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeNavigation();
     initializeMobileMenu();
     initializeScrollEffects();
+    initializeCompactHeader();
 });
 
 // ===== CHATBOT FUNCTIONALITY =====
@@ -238,9 +239,16 @@ function initializeMobileMenu() {
             nav.classList.toggle('mobile-active');
         });
         
-        // Close mobile menu when clicking outside
+        // Close mobile menu when clicking outside (only on mobile)
         document.addEventListener('click', function(e) {
-            if (!nav.contains(e.target) && !mobileToggle.contains(e.target)) {
+            // Only close if on mobile, clicking outside nav, toggle, and header
+            const header = document.querySelector('.header');
+            const isMobileView = window.innerWidth <= 768;
+            
+            if (isMobileView && 
+                !nav.contains(e.target) && 
+                !mobileToggle.contains(e.target) && 
+                !header.contains(e.target)) {
                 nav.style.display = 'none';
                 nav.classList.remove('mobile-active');
             }
@@ -255,13 +263,12 @@ function initializeMobileMenu() {
 
 // ===== SCROLL EFFECTS =====
 function initializeScrollEffects() {
-    const scrollContainer = document.querySelector('.scroll-container');
     const sections = document.querySelectorAll('section');
     const navLinks = document.querySelectorAll('.nav-link[href^="#"]');
     
-    if (scrollContainer && sections.length > 0) {
-        scrollContainer.addEventListener('scroll', function() {
-            const scrollTop = scrollContainer.scrollTop;
+    if (sections.length > 0) {
+        window.addEventListener('scroll', function() {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
             const headerHeight = document.querySelector('.header').offsetHeight;
             
             // Update active navigation
@@ -281,7 +288,7 @@ function initializeScrollEffects() {
             });
             
             // Add scroll effects to elements
-            const windowHeight = scrollContainer.clientHeight;
+            const windowHeight = window.innerHeight;
             const elements = document.querySelectorAll('.feature-card, .about-content, .hero-stats');
             
             elements.forEach(element => {
@@ -294,6 +301,72 @@ function initializeScrollEffects() {
                 }
             });
         });
+    }
+}
+
+// ===== COMPACT HEADER =====
+function initializeCompactHeader() {
+    const header = document.querySelector('.header');
+    const logoTitle = document.querySelector('.logo h1');
+    const tagline = document.querySelector('.tagline');
+    
+    if (header && logoTitle && tagline) {
+        // Valores iniciais
+        const initialPadding = 16; // 1rem = 16px
+        const minPadding = 8; // 0.5rem = 8px
+        const initialFontSize = 32; // 2rem = 32px
+        const minFontSize = 24; // 1.5rem = 24px
+        const initialTaglineSize = 12.8; // 0.8rem = 12.8px
+        const minTaglineSize = 11.2; // 0.7rem = 11.2px
+        const initialMarginBottom = 4; // 0.25rem = 4px
+        const minMarginBottom = 1.6; // 0.1rem = 1.6px
+        const maxScroll = 80; // Distância máxima para a animação completa (reduzida de 200 para 80)
+        
+        const updateHeader = () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Calcula o progresso da animação (0 = início, 1 = final)
+            const progress = Math.min(scrollTop / maxScroll, 1);
+            
+            // Interpolação mais agressiva usando easing mais rápido
+            const easeProgress = 1 - Math.pow(1 - progress, 2); // ease-out quadratic (mais rápido que cubic)
+            
+            // Calcula os valores interpolados
+            const currentPadding = initialPadding - (initialPadding - minPadding) * easeProgress;
+            const currentFontSize = initialFontSize - (initialFontSize - minFontSize) * easeProgress;
+            const currentTaglineSize = initialTaglineSize - (initialTaglineSize - minTaglineSize) * easeProgress;
+            const currentMarginBottom = initialMarginBottom - (initialMarginBottom - minMarginBottom) * easeProgress;
+            const currentOpacity = 0.8 - (0.15 * easeProgress); // Maior variação de opacidade
+            
+            // Aplica os valores calculados
+            header.style.paddingTop = `${currentPadding}px`;
+            header.style.paddingBottom = `${currentPadding}px`;
+            logoTitle.style.fontSize = `${currentFontSize}px`;
+            logoTitle.style.marginBottom = `${currentMarginBottom}px`;
+            tagline.style.fontSize = `${currentTaglineSize}px`;
+            tagline.style.opacity = currentOpacity;
+            
+            // Adiciona sombra mais intensa conforme desce
+            const shadowIntensity = 0.15 + (0.15 * easeProgress); // Maior variação de sombra
+            header.style.boxShadow = `0 4px 20px rgba(5, 19, 50, ${shadowIntensity})`;
+        };
+        
+        // Throttle para performance
+        let ticking = false;
+        const handleScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateHeader();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
+        
+        window.addEventListener('scroll', handleScroll);
+        
+        // Chama uma vez para definir o estado inicial
+        updateHeader();
     }
 }
 
@@ -411,4 +484,38 @@ if (typeof module !== 'undefined' && module.exports) {
         isMobile,
         debounce
     };
+}
+
+// ===== MODAL FUNCTIONS (para uso global) =====
+function openLogin() {
+    // Se estiver na página de planos, usar o modal local
+    if (document.getElementById('loginModal')) {
+        const modal = document.getElementById('loginModal');
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        // Caso contrário, redirecionar para a página de planos
+        window.location.href = 'planos.html#login';
+    }
+}
+
+function openSignup(plan = 'premium') {
+    // Se estiver na página de planos, usar o modal local
+    if (document.getElementById('signupModal')) {
+        const modal = document.getElementById('signupModal');
+        const selectedPlanElement = document.getElementById('selectedPlan');
+        
+        const planNames = {
+            'basico': 'Básico - R$ 29/mês',
+            'premium': 'Premium - R$ 59/mês',
+            'elite': 'Elite - R$ 99/mês'
+        };
+        
+        selectedPlanElement.textContent = planNames[plan];
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        // Caso contrário, redirecionar para a página de planos
+        window.location.href = 'planos.html#signup';
+    }
 }
