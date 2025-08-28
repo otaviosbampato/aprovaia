@@ -1,4 +1,4 @@
-/* Imported original global styles from legacy project */
+ /* Imported original global styles from legacy project */
 @import url('https://fonts.googleapis.com/css2?family=Rethink+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 
@@ -9,7 +9,11 @@
 @import '../legacy/redacoach.css';
 
 /* Additional React specific resets */
-html, body, #root { height: 100%; }
+html, body, #root { height: 100%; width:100%; max-width:100%; }
+
+/* Ensure React shell spans full width */
+.app-shell { width:100%; display:flex; flex-direction:column; min-height:100%; }
+.app-shell > .main-content { flex:1 0 auto; }
 
 /* Utility helpers */
 .hidden { display: none !important; }

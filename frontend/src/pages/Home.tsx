@@ -57,7 +57,8 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <div className="about-image">
-                <img src="/enem.png" alt="ENEM 2024 - Prepare-se com Aprova.ia" className="enem-image" />
+                {/* Image path adjusted; ensure enem.png is placed in frontend/public */}
+                <img src="/enem.png" loading="lazy" decoding="async" alt="ENEM 2024 - Prepare-se com Aprova.ia" className="enem-image" />
               </div>
             </div>
           </div>

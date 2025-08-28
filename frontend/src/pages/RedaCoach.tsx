@@ -1,12 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-interface AnalysisResult { overall:number; competencies:number[]; descriptions:string[]; suggestions:string[][]; detailed:string; }
+interface Competencia {
+  nota:number;
+  feedback:string;
+  pontos_fortes:string;
+  pontos_fracos:string;
+  sugestoes:string;
+}
 
-function simulateAnalysis(text:string){
-  const words=text.trim().split(/\s+/).filter(Boolean).length;
-  let base=600; if(words>=200 && words<=400) base+=100; else if(words>400) base+=50; else base-=100; base+=Math.random()*150-75; const overall=Math.max(200,Math.min(1000,Math.round(base)));
-  const comps=Array.from({length:5},()=> Math.max(40, Math.min(200, Math.round(overall*0.2 + (Math.random()*40-20)))));
-  return { overall, competencies:comps } as AnalysisResult;
+interface AnalysisResult {
+  overall:number;
+  competencias: Record<string, Competencia>;
+  observacoes:string;
+  tempo:number;
 }
 
 const competencyTitles=[
@@ -24,19 +30,46 @@ const RedaCoach: React.FC = () => {
   const [wordCount,setWordCount]=useState(0);
   const [analyzing,setAnalyzing]=useState(false);
   const [result,setResult]=useState<AnalysisResult|null>(null);
+  const [error,setError]=useState<string>('');
   const fileInput=useRef<HTMLInputElement|null>(null);
   const [fileInfo,setFileInfo]=useState<File|null>(null);
 
   useEffect(()=>{ setWordCount(essay.trim()? essay.trim().split(/\s+/).length:0); },[essay]);
 
-  const analyze=()=>{
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+  const analyze=async()=>{
+    setError('');
     if(method==='text'){
-      if(!essay.trim()) return alert('Por favor, digite sua redação.');
-      if(essay.trim().split(/\s+/).length < 200) return alert('Sua redação deve ter pelo menos 200 palavras.');
-      if(!theme.trim()) return alert('Informe o tema.');
+      if(!essay.trim()) { setError('Por favor, digite sua redação.'); return; }
+      if(essay.trim().split(/\s+/).length < 50) { setError('Sua redação deve ter pelo menos 50 palavras.'); return; }
+      if(!theme.trim()) { setError('Informe o tema.'); return; }
     }
-    setAnalyzing(true);
-    setTimeout(()=>{ const r=simulateAnalysis(essay||'Texto do arquivo'); setResult(r); setAnalyzing(false); }, 2000);
+    try {
+      setAnalyzing(true);
+      const resp = await fetch(`${API_URL}/corrigir-redacao`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texto: essay, tema: theme })
+      });
+      if(!resp.ok){
+        const detail = await resp.json().catch(()=>({detail:'Erro desconhecido'}));
+        throw new Error(detail.detail || 'Erro ao corrigir a redação');
+      }
+      const data = await resp.json();
+      const r:AnalysisResult = {
+        overall: data.nota_geral,
+        competencias: data.competencias,
+        observacoes: data.observacoes_gerais,
+        tempo: data.tempo_processamento
+      };
+      setResult(r);
+    } catch(e){
+      const message = e instanceof Error ? e.message : 'Falha ao processar';
+      setError(message);
+    } finally {
+      setAnalyzing(false);
+    }
   };
 
   return (
@@ -88,6 +121,13 @@ const RedaCoach: React.FC = () => {
           </div>
         </div>
       </section>
+      {error && (
+        <div className="section-container" style={{marginTop:'1rem'}}>
+          <div style={{background:'var(--error-bg, #ffe5e5)', color:'var(--error-fg, #900)', padding:'12px 16px', borderRadius:8, fontSize:14}}>
+            <strong>Erro:</strong> {error}
+          </div>
+        </div>
+      )}
       {result && (
         <section className="results-section" id="resultsSection">
           <div className="section-container">
@@ -101,15 +141,20 @@ const RedaCoach: React.FC = () => {
                 <div className="score-description"><h3>Nota Geral</h3><p>{result.overall>=900? 'Excelente!':'Resultado gerado.'}</p></div>
               </div>
               <div className="competencies-grid">
-                {result.competencies.map((c,i)=> (
-                  <div key={i} className="competency-card">
-                    <div className="competency-header"><h4>Competência {i+1}</h4><div className="competency-score">{c}</div></div>
-                    <div className="competency-title">{competencyTitles[i]}</div>
-                    <div className="competency-description">{competencyTitles[i]}</div>
+                {Object.entries(result.competencias).map(([label, comp], i)=> (
+                  <div key={label} className="competency-card">
+                    <div className="competency-header"><h4>{label}</h4><div className="competency-score">{comp.nota}</div></div>
+                    <div className="competency-title">{competencyTitles[i] || label}</div>
+                    <div className="competency-description">
+                      <strong>Feedback:</strong> {comp.feedback}<br/>
+                      <strong>Pontos Fortes:</strong> {comp.pontos_fortes}<br/>
+                      <strong>Pontos Fracos:</strong> {comp.pontos_fracos}<br/>
+                      <strong>Sugestões:</strong> {comp.sugestoes}
+                    </div>
                   </div>
                 ))}
               </div>
-              <div className="detailed-feedback"><h3><i className="fas fa-comments"/> Feedback Detalhado</h3><div className="feedback-content"><p>Texto simulado de feedback. Pratique estrutura, diversifique repertório e revise a coerência argumentativa.</p></div></div>
+              <div className="detailed-feedback"><h3><i className="fas fa-comments"/> Observações Gerais</h3><div className="feedback-content"><p>{result.observacoes}</p><p style={{fontSize:12, opacity:0.7}}>Processado em {result.tempo}s</p></div></div>
               <div className="results-actions"><button className="btn-secondary" onClick={()=>alert('Baixando relatório...')}><i className="fas fa-download"/> Baixar Relatório</button><button className="btn-primary" onClick={()=>{ setResult(null); setEssay(''); setTheme('');}}><i className="fas fa-plus"/> Nova Análise</button></div>
             </div>
           </div>

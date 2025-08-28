@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from groq import Groq
 import json
@@ -16,6 +17,15 @@ app = FastAPI(
     title="API de Correção de Redações ENEM",
     description="API para correção automática de redações do ENEM usando IA",
     version="1.0.0"
+)
+
+# Configurar CORS (necessário para o frontend acessar a API no navegador)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Em produção, restrinja para os domínios do frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 from dotenv import load_dotenv
@@ -52,80 +62,165 @@ def criar_prompt_correcao(texto: str, tema: str = "") -> str:
     tema_info = f"\n--- Tema da redação ---\n{tema}\n" if tema else ""
     
     prompt = f"""
-Você é um avaliador especialista em redações do ENEM com anos de experiência. Sua tarefa é analisar a redação fornecida e dar uma avaliação completa e precisa, seguindo rigorosamente os critérios oficiais do ENEM.
+Você é um avaliador oficial do ENEM com formação em Letras ou Linguística, seguindo rigorosamente a Matriz de Referência para Redação 2024. Avalie a redação de forma independente, considerando que ela será corrigida por outro avaliador e a nota final será a média entre as duas avaliações.
 
-INSTRUÇÕES IMPORTANTES:
-- Seja rigoroso e justo na avaliação
-- Forneça feedback específico e construtivo
-- Identifique exemplos concretos do texto para justificar as notas
-- Use linguagem clara e educativa
-- Considere o nível esperado para o Ensino Médio
+CRITÉRIOS DE ANULAÇÃO (NOTA 0 TOTAL):
+Verifique primeiro se a redação deve ser anulada por:
+- Fuga total ao tema
+- Não atendimento ao tipo dissertativo-argumentativo
+- Texto com até 7 linhas manuscritas (ou 10 no Braille)
+- Impropérios, desenhos ou formas de identificação
+- Parte deliberadamente desconectada do tema
+- Texto predominantemente em língua estrangeira
+- Cópia integral de textos motivadores
 
 {tema_info}
 
-COMPETÊNCIAS A AVALIAR:
+COMPETÊNCIAS - AVALIE RIGOROSAMENTE CONFORME A MATRIZ OFICIAL:
 
-1. DOMÍNIO DA ESCRITA FORMAL DA LÍNGUA PORTUGUESA (0-200 pontos)
-Avalie: ortografia, acentuação, pontuação, concordância verbal/nominal, regência verbal/nominal, crase, colocação pronominal, paralelismo sintático, adequação vocabular e registro formal.
+*COMPETÊNCIA I - DOMÍNIO DA MODALIDADE ESCRITA FORMAL (0-200 pontos)*
 
-2. COMPREENDER O TEMA E NÃO FUGIR DO QUE É PROPOSTO (0-200 pontos)
-Avalie: compreensão da proposta, desenvolvimento do tema central, manutenção do foco temático, ausência de tangenciamento ou fuga ao tema.
+Critérios de Avaliação:
+- Convenções da escrita: acentuação, ortografia, hífen, maiúsculas/minúsculas, separação silábica
+- Aspectos gramaticais: regência verbal/nominal, concordância verbal/nominal, tempos/modos verbais, pontuação, paralelismo, pronomes, crase
+- Escolha de registro: adequação à modalidade formal, ausência de marcas de oralidade
+- Escolha vocabular: precisão e adequação ao contexto
+- Estrutura sintática: períodos bem estruturados, complexidade adequada, ausência de truncamentos
 
-3. SELECIONAR, RELACIONAR, ORGANIZAR E INTERPRETAR INFORMAÇÕES EM DEFESA DE UM PONTO DE VISTA (0-200 pontos)
-Avalie: clareza da tese, qualidade e pertinência dos argumentos, uso de informações/dados/exemplos, defesa consistente do ponto de vista, repertório cultural.
+Níveis:
+* 200 pontos: Excelente domínio, desvios aceitos apenas como excepcionalidade sem reincidência
+* 160 pontos: Bom domínio com poucos desvios
+* 120 pontos: Domínio mediano com alguns desvios
+* 80 pontos: Domínio insuficiente com muitos desvios
+* 40 pontos: Domínio precário com desvios sistemáticos e diversificados
+* 0 pontos: Desconhecimento da modalidade formal
 
-4. CONHECIMENTO DOS MECANISMOS LINGUÍSTICOS PARA CONSTRUÇÃO DA ARGUMENTAÇÃO (0-200 pontos)
-Avalie: articulação entre parágrafos, uso de conectivos, coesão referencial, progressão temática, estruturação lógica, fluidez na leitura.
+*COMPETÊNCIA II - COMPREENSÃO DA PROPOSTA E TIPO TEXTUAL (0-200 pontos)*
 
-5. ELABORAR PROPOSTA DE INTERVENÇÃO RESPEITANDO DIREITOS HUMANOS (0-200 pontos)
-Avalie: presença de proposta de intervenção, detalhamento (agente + ação + meio/modo + finalidade + detalhamento), viabilidade, respeito aos direitos humanos, relação com a argumentação.
+Critérios de Avaliação:
+- Compreensão completa da proposta de redação
+- Desenvolvimento do tema dentro dos limites estruturais do texto dissertativo-argumentativo
+- Presença e produtividade do repertório sociocultural
+- Manutenção do foco temático (evitar tangenciamento)
+- Defesa clara de um ponto de vista com argumentação
 
-FORMATO DE RESPOSTA OBRIGATÓRIO - RESPONDA EXATAMENTE NESTE FORMATO JSON:
+ATENÇÃO: Tangenciamento afeta também as Competências III e V (máximo 40 pontos em cada).
+
+Níveis:
+* 200 pontos: Argumentação consistente com repertório sociocultural produtivo, excelente domínio dissertativo-argumentativo
+* 160 pontos: Argumentação consistente, bom domínio com proposição, argumentação e conclusão
+* 120 pontos: Argumentação previsível, domínio mediano com estrutura adequada
+* 80 pontos: Cópia de trechos motivadores ou domínio insuficiente da estrutura
+* 40 pontos: Tangenciamento ao tema ou domínio precário com traços de outros tipos textuais
+* 0 pontos: Fuga ao tema ou não atendimento à estrutura dissertativo-argumentativa
+
+*COMPETÊNCIA III - ORGANIZAÇÃO E ARGUMENTAÇÃO (0-200 pontos)*
+
+Critérios de Avaliação:
+- Presença de projeto de texto perceptível
+- Seleção pertinente de argumentos para defesa do ponto de vista
+- Articulação e organização das informações
+- Desenvolvimento adequado dos argumentos (não apenas mencioná-los)
+- Progressão textual coerente
+- Ausência de contradições
+- Indícios de autoria
+
+Níveis:
+* 200 pontos: Informações consistentes e organizadas, configurando autoria em defesa do ponto de vista
+* 160 pontos: Informações organizadas com indícios de autoria
+* 120 pontos: Informações limitadas aos textos motivadores, pouco organizadas
+* 80 pontos: Informações desorganizadas ou contraditórias, limitadas aos motivadores
+* 40 pontos: Informações pouco relacionadas ao tema, incoerentes, sem defesa de ponto de vista
+* 0 pontos: Informações não relacionadas ao tema, sem defesa de ponto de vista
+
+*COMPETÊNCIA IV - MECANISMOS LINGUÍSTICOS DE ARGUMENTAÇÃO (0-200 pontos)*
+
+Critérios de Avaliação:
+- Articulação adequada entre parágrafos
+- Estruturação lógica dos períodos
+- Repertório diversificado de recursos coesivos
+- Referenciação adequada (pronomes, sinônimos, expressões resumitivas)
+- Uso correto de operadores argumentativos
+- Ausência de paragrafação inadequada
+
+Níveis:
+* 200 pontos: Articula bem as partes com repertório diversificado de recursos coesivos
+* 160 pontos: Articula as partes com poucas inadequações e repertório diversificado
+* 120 pontos: Articulação mediana com inadequações e repertório pouco diversificado
+* 80 pontos: Articulação insuficiente com muitas inadequações e repertório limitado
+* 40 pontos: Articulação precária
+* 0 pontos: Não articula as informações
+
+*COMPETÊNCIA V - PROPOSTA DE INTERVENÇÃO (0-200 pontos)*
+
+Critérios de Avaliação:
+- Presença de proposta clara e explícita
+- Detalhamento completo: O QUE (ação), QUEM (agente), COMO (meio), PARA QUE (finalidade), DETALHAMENTO adicional
+- Articulação com a argumentação desenvolvida
+- Especificidade ao tema (não apenas ao assunto geral)
+- Respeito aos direitos humanos
+- Viabilidade da proposta
+
+DESRESPEITO AOS DIREITOS HUMANOS:
+- Defesa de tortura, mutilação, execução sumária, "justiça com as próprias mãos"
+- Incitação à violência por questões de raça, etnia, gênero, credo, condição física
+- Qualquer forma de discurso de ódio
+- Violação dos princípios: dignidade humana, igualdade, valorização das diferenças, laicidade, democracia, sustentabilidade
+
+Níveis:
+* 200 pontos: Proposta muito bem elaborada, detalhada, relacionada ao tema e articulada
+* 160 pontos: Proposta bem elaborada, relacionada e articulada
+* 120 pontos: Proposta mediana, relacionada e articulada
+* 80 pontos: Proposta insuficiente, relacionada ao tema mas pouco articulada
+* 40 pontos: Proposta vaga, precária ou relacionada apenas ao assunto
+* 0 pontos: Ausência de proposta ou proposta não relacionada ao tema
+
+FORMATO OBRIGATÓRIO - RESPONDA APENAS EM JSON:
 
 {{
-    "nota_geral": [número de 0 a 1000],
+    "nota_geral": [soma das 5 competências],
     "competencia_1": {{
-        "nota": [0-200],
-        "feedback": "Análise detalhada da competência 1 com exemplos específicos do texto",
-        "pontos_fortes": "Aspectos positivos identificados",
-        "pontos_fracos": "Aspectos que precisam melhorar",
-        "sugestoes": "Sugestões específicas para melhoria"
+        "nota": [0, 40, 80, 120, 160 ou 200],
+        "feedback": "Análise específica com exemplos do texto, identificando desvios concretos",
+        "pontos_fortes": "Aspectos positivos observados",
+        "pontos_fracos": "Problemas identificados com exemplos",
+        "sugestoes": "Orientações específicas para melhoria"
     }},
     "competencia_2": {{
-        "nota": [0-200],
-        "feedback": "Análise detalhada da competência 2 com exemplos específicos do texto",
-        "pontos_fortes": "Aspectos positivos identificados",
-        "pontos_fracos": "Aspectos que precisam melhorar",
-        "sugestoes": "Sugestões específicas para melhoria"
+        "nota": [0, 40, 80, 120, 160 ou 200],
+        "feedback": "Análise da compreensão do tema, tipo textual e repertório",
+        "pontos_fortes": "Aspectos positivos observados",
+        "pontos_fracos": "Problemas de compreensão ou estrutura",
+        "sugestoes": "Orientações para melhor desenvolvimento temático"
     }},
     "competencia_3": {{
-        "nota": [0-200],
-        "feedback": "Análise detalhada da competência 3 com exemplos específicos do texto",
-        "pontos_fortes": "Aspectos positivos identificados",
-        "pontos_fracos": "Aspectos que precisam melhorar",
-        "sugestoes": "Sugestões específicas para melhoria"
+        "nota": [0, 40, 80, 120, 160 ou 200],
+        "feedback": "Análise do projeto de texto, argumentação e organização",
+        "pontos_fortes": "Qualidades argumentativas identificadas",
+        "pontos_fracos": "Problemas de coerência ou desenvolvimento",
+        "sugestoes": "Orientações para melhor organização textual"
     }},
     "competencia_4": {{
-        "nota": [0-200],
-        "feedback": "Análise detalhada da competência 4 com exemplos específicos do texto",
-        "pontos_fortes": "Aspectos positivos identificados",
-        "pontos_fracos": "Aspectos que precisam melhorar",
-        "sugestoes": "Sugestões específicas para melhoria"
+        "nota": [0, 40, 80, 120, 160 ou 200],
+        "feedback": "Análise da articulação textual e recursos coesivos",
+        "pontos_fortes": "Recursos coesivos bem empregados",
+        "pontos_fracos": "Problemas de articulação identificados",
+        "sugestoes": "Orientações para melhor coesão textual"
     }},
     "competencia_5": {{
-        "nota": [0-200],
-        "feedback": "Análise detalhada da competência 5 com exemplos específicos do texto",
-        "pontos_fortes": "Aspectos positivos identificados",
-        "pontos_fracos": "Aspectos que precisam melhorar",
-        "sugestoes": "Sugestões específicas para melhoria"
+        "nota": [0, 40, 80, 120, 160 ou 200],
+        "feedback": "Análise da proposta de intervenção e detalhamento",
+        "pontos_fortes": "Aspectos positivos da proposta",
+        "pontos_fracos": "Ausências ou inadequações na proposta",
+        "sugestoes": "Orientações para proposta mais completa"
     }},
-    "observacoes_gerais": "Comentários gerais sobre a redação, principais pontos de destaque e orientações para evolução"
+    "observacoes_gerais": "Síntese da avaliação considerando o perfil de um concluinte do Ensino Médio"
 }}
 
 --- REDAÇÃO A SER AVALIADA ---
 {texto}
 
-IMPORTANTE: Responda APENAS com o JSON válido, sem texto adicional antes ou depois.
+IMPORTANTE: Avalie com o rigor de um corretor oficial do ENEM. Use apenas as notas: 0, 40, 80, 120, 160 ou 200 pontos para cada competência. Responda APENAS com o JSON válido.
 """
     
     return prompt
