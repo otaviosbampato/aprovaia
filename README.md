@@ -13,13 +13,6 @@ Aprova.ia é uma plataforma educacional que oferece ferramentas modernas e intel
 - **Assistente IA**: Inteligência artificial para tirar dúvidas e orientar estudos
 - **Acompanhamento de Progresso**: Monitore seu desenvolvimento ao longo do tempo
 
-### Estatísticas
-
-- 50k+ Questões disponíveis
-- 10k+ Redações Corrigidas
-- 95% Taxa de Aprovação
-- Suporte para: FUVEST, UNICAMP, PAS-UFLA, CMMG, UIT, PUC e outros
-
 ## Tecnologias Utilizadas
 
 ### Frontend
