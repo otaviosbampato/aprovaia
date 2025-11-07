@@ -101,19 +101,6 @@ cd frontend
 npm run build
 ```
 
-## Documentação da API
-
-> [!NOTE]
-> A documentação interativa da API está disponível em `http://localhost:8000/docs` quando o backend está em execução.
-
-## Contribuindo
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
-
-## Licença
-
-Este projeto é proprietário e todos os direitos são reservados.
-
-## Contato
-
-Para dúvidas ou sugestões, entre em contato através dos canais oficiais da plataforma.
+## Autoria
+[Frederico Maia Estrella](https://github.com/FredMaia)
+[Otávio Sbampato Andrade](https://github.com/otaviosbampato)
