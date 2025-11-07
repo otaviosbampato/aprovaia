@@ -1,5 +1,6 @@
 import React from 'react';
 import Chatbot from '../components/Chat/Chatbot';
+import enemImage from '../assets/enem.png';
 
 const Home: React.FC = () => {
   return (
@@ -57,8 +58,7 @@ const Home: React.FC = () => {
                 </div>
               </div>
               <div className="about-image">
-                {/* Image path adjusted; ensure enem.png is placed in frontend/public */}
-                <img src="/enem.png" loading="lazy" decoding="async" alt="ENEM 2024 - Prepare-se com Aprova.ia" className="enem-image" />
+                <img src={enemImage} loading="lazy" decoding="async" className="enem-image" alt="ENEM" />
               </div>
             </div>
           </div>

@@ -64,6 +64,8 @@ def criar_prompt_correcao(texto: str, tema: str = "") -> str:
     prompt = f"""
 Você é um avaliador oficial do ENEM com formação em Letras ou Linguística, seguindo rigorosamente a Matriz de Referência para Redação 2024. Avalie a redação de forma independente, considerando que ela será corrigida por outro avaliador e a nota final será a média entre as duas avaliações.
 
+NÃO SEJA MUITO CRITERIOSO. PERMITA PELO MENOS 2 ERROS POR COMPETÊNCIA. Não tire pontos por qualidades abstratas como "Alguns trechos poderiam ser mais desenvolvidos" ou "Alguns parágrafos são breves e poderiam ser aprofundados".
+
 CRITÉRIOS DE ANULAÇÃO (NOTA 0 TOTAL):
 Verifique primeiro se a redação deve ser anulada por:
 - Fuga total ao tema
